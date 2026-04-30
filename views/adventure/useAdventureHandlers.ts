@@ -13,6 +13,7 @@ import {
   getRandomEventTemplate,
   templateToAdventureResult,
 } from '../../services/adventureTemplateService';
+import { generateAIAdventureResult } from '../../services/aiAdventureService';
 import { showConfirm } from '../../utils/toastUtils';
 import { getPlayerTotalStats } from '../../utils/statUtils';
 
@@ -264,6 +265,19 @@ export function useAdventureHandlers({
         battleContext = battleRes.battleContext;
         petSkillCooldowns = battleRes.petSkillCooldowns;
       } else {
+        try {
+          result = await generateAIAdventureResult(
+            player,
+            adventureType,
+            riskLevel
+          );
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.warn('AI adventure generation failed, falling back to local template:', error);
+          }
+        }
+
+        if (!result) {
         // 100%使用模板库
         initializeEventTemplateLibrary();
         const template = getRandomEventTemplate(adventureType, riskLevel, player.realm, player.realmLevel);
@@ -406,6 +420,7 @@ export function useAdventureHandlers({
             spiritStonesChange: 0,
             eventColor: 'normal',
           };
+        }
         }
       }
 
