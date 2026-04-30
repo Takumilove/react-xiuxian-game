@@ -13,7 +13,7 @@ import {
   getRandomEventTemplate,
   templateToAdventureResult,
 } from '../../services/adventureTemplateService';
-import { generateAIAdventureResult } from '../../services/aiAdventureService';
+import { polishAIAdventureStory } from '../../services/aiAdventureService';
 import { showConfirm } from '../../utils/toastUtils';
 import { getPlayerTotalStats } from '../../utils/statUtils';
 
@@ -265,22 +265,8 @@ export function useAdventureHandlers({
         battleContext = battleRes.battleContext;
         petSkillCooldowns = battleRes.petSkillCooldowns;
       } else {
-        try {
-          result = await generateAIAdventureResult(
-            player,
-            adventureType,
-            riskLevel
-          );
-        } catch (error) {
-          if (import.meta.env.DEV) {
-            console.warn('AI adventure generation failed, falling back to local template:', error);
-          }
-        }
-
-        if (!result) {
-          // 100%使用模板库
-          initializeEventTemplateLibrary();
-          const template = getRandomEventTemplate(adventureType, riskLevel, player.realm, player.realmLevel);
+        initializeEventTemplateLibrary();
+        const template = getRandomEventTemplate(adventureType, riskLevel, player.realm, player.realmLevel);
 
         if (template) {
           // 使用实际最大血量（包含金丹法数加成等）
@@ -422,6 +408,20 @@ export function useAdventureHandlers({
           };
         }
       }
+
+      if (result && result.story && result.adventureType !== 'dao_combining_challenge' && !result.heavenEarthSoulEncounter) {
+        try {
+          result = await polishAIAdventureStory(
+            result,
+            player,
+            adventureType,
+            riskLevel
+          );
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.warn('AI story polish failed, using local story:', error);
+          }
+        }
       }
 
       // 确保 result 存在，如果不存在则使用默认值
