@@ -14,6 +14,7 @@ interface UseAppViewHandlersProps {
   handleEnterRealm: (realm: any) => void;
   handleUseItem: (item: Item) => void;
   handleEquipItem: (item: Item, slot: any) => void;
+  handleEquipBestSet: () => void;
   handleUnequipItem: (slot: any) => void;
   handleOpenUpgrade: (item: Item) => void;
   handleDiscardItem: (item: Item) => void;
@@ -260,6 +261,7 @@ export function useModalsHandlers(props: UseAppViewHandlersProps) {
     handleCloseBattleModal,
     handleUseItem,
     handleEquipItem,
+    handleEquipBestSet,
     handleUnequipItem,
     handleOpenUpgrade,
     handleDiscardItem,
@@ -367,6 +369,7 @@ export function useModalsHandlers(props: UseAppViewHandlersProps) {
     handleCloseBattleModal,
     handleUseItem,
     handleEquipItem,
+    handleEquipBestSet,
     handleUnequipItem,
     handleOpenUpgrade,
     handleDiscardItem,
@@ -472,7 +475,7 @@ export function useModalsHandlers(props: UseAppViewHandlersProps) {
     setIsPetOpen, setIsLotteryOpen, setIsSettingsOpen, setIsDailyQuestOpen,
     setIsGrottoOpen, setIsShopOpen, setIsBattleModalOpen, setItemToUpgrade,
     setCurrentShop, setBattleReplay, setRevealedBattleRounds, handleSkipBattleLogs,
-    handleCloseBattleModal, handleUseItem, handleEquipItem, handleUnequipItem,
+    handleCloseBattleModal, handleUseItem, handleEquipItem, handleEquipBestSet, handleUnequipItem,
     handleOpenUpgrade, handleDiscardItem, handleBatchDiscard, handleBatchUse,
     handleOrganizeInventory, handleRefineNatalArtifact, handleUnrefineNatalArtifact,
     handleRefineAdvancedItem, handleUpgradeItem, handleLearnArt, handleActivateArt,

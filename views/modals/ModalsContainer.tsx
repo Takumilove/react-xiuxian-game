@@ -79,6 +79,7 @@ interface ModalsContainerProps {
     // Inventory
     handleUseItem: (item: Item) => void;
     handleEquipItem: (item: Item, slot: any) => void;
+    handleEquipBestSet: () => void;
     handleUnequipItem: (slot: any) => void;
     handleOpenUpgrade: (item: Item) => void;
     handleDiscardItem: (item: Item) => void;
@@ -277,6 +278,7 @@ function ModalsContainer({
           maxLongevityRules={player.maxLongevityRules}
           onUseItem={handlers.handleUseItem}
           onEquipItem={handlers.handleEquipItem}
+          onEquipBestSet={handlers.handleEquipBestSet}
           onUnequipItem={handlers.handleUnequipItem}
           onUpgradeItem={handlers.handleOpenUpgrade}
           onDiscardItem={handlers.handleDiscardItem}

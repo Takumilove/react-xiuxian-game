@@ -346,6 +346,7 @@ export function useAppHandlers(props: UseAppHandlersProps) {
     [equipmentHandlers.handleEquipItem, dailyQuestHandlers]
   );
 
+  const handleEquipBestSet = equipmentHandlers.handleEquipBestSet;
   const handleUnequipItem = equipmentHandlers.handleUnequipItem;
 
   const handleRefineNatalArtifact = useCallback(
@@ -494,6 +495,7 @@ export function useAppHandlers(props: UseAppHandlersProps) {
 
     // 装备相关
     handleEquipItem,
+    handleEquipBestSet,
     handleUnequipItem,
     handleRefineNatalArtifact,
     handleUnrefineNatalArtifact,

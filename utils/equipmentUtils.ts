@@ -4,6 +4,82 @@
  */
 
 import { Item, ItemType, EquipmentSlot, PlayerStats } from '../types';
+import { getItemStats } from './itemUtils';
+
+const EQUIPMENT_SLOT_ORDER: EquipmentSlot[] = [
+  EquipmentSlot.Head,
+  EquipmentSlot.Shoulder,
+  EquipmentSlot.Chest,
+  EquipmentSlot.Gloves,
+  EquipmentSlot.Legs,
+  EquipmentSlot.Boots,
+  EquipmentSlot.Ring1,
+  EquipmentSlot.Ring2,
+  EquipmentSlot.Ring3,
+  EquipmentSlot.Ring4,
+  EquipmentSlot.Accessory1,
+  EquipmentSlot.Accessory2,
+  EquipmentSlot.Artifact1,
+  EquipmentSlot.Artifact2,
+  EquipmentSlot.Weapon,
+];
+
+export const getCompatibleEquipmentSlots = (item: Item): EquipmentSlot[] => {
+  const multiSlots = getEquipmentSlotsByType(item.type);
+  if (multiSlots.length > 0) return multiSlots;
+  return item.equipmentSlot ? [item.equipmentSlot] : [];
+};
+
+export const getEquipmentScore = (
+  item: Item,
+  natalArtifactId?: string | null
+): number => {
+  const stats = getItemStats(item, item.id === natalArtifactId);
+  return (
+    stats.attack * 1.5 +
+    stats.defense * 1.2 +
+    stats.hp * 0.15 +
+    stats.spirit * 1.1 +
+    stats.physique +
+    stats.speed
+  );
+};
+
+export const buildBestEquipmentSet = (
+  inventory: Item[],
+  natalArtifactId?: string | null
+): Partial<Record<EquipmentSlot, string>> => {
+  const candidates = inventory.filter(
+    (item) =>
+      item.isEquippable &&
+      getCompatibleEquipmentSlots(item).length > 0 &&
+      getEquipmentScore(item, natalArtifactId) > 0
+  );
+  const selected: Partial<Record<EquipmentSlot, string>> = {};
+  const usedItemIds = new Set<string>();
+
+  for (const slot of EQUIPMENT_SLOT_ORDER) {
+    const bestItem = candidates
+      .filter(
+        (item) =>
+          !usedItemIds.has(item.id) &&
+          getCompatibleEquipmentSlots(item).includes(slot)
+      )
+      .sort(
+        (a, b) =>
+          getEquipmentScore(b, natalArtifactId) -
+            getEquipmentScore(a, natalArtifactId) ||
+          (b.level || 0) - (a.level || 0)
+      )[0];
+
+    if (bestItem) {
+      selected[slot] = bestItem.id;
+      usedItemIds.add(bestItem.id);
+    }
+  }
+
+  return selected;
+};
 
 /**
  * 获取指定装备类型的所有可用槽位

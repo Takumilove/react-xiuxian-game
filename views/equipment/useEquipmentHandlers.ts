@@ -19,7 +19,11 @@ import {
 } from '../../constants/index';
 import { useGameStore } from '../../store';
 import { useUIStore } from '../../store';
-import { findEmptyEquipmentSlot, getEquipmentSlotLabel } from '../../utils/equipmentUtils';
+import {
+  buildBestEquipmentSet,
+  findEmptyEquipmentSlot,
+  getEquipmentSlotLabel,
+} from '../../utils/equipmentUtils';
 
 // 兼容旧接口（可选，用于向后兼容）
 interface UseEquipmentHandlersProps {
@@ -59,6 +63,7 @@ export function useEquipmentHandlers(props?: UseEquipmentHandlersProps) {
   if (!player) {
     return {
       handleEquipItem: () => {},
+      handleEquipBestSet: () => {},
       handleUnequipItem: () => {},
       handleRefineNatalArtifact: () => {},
       handleUnrefineNatalArtifact: () => {},
@@ -338,6 +343,93 @@ export function useEquipmentHandlers(props?: UseEquipmentHandlersProps) {
         spirit: newSpirit,
         physique: newPhysique,
         speed: Math.max(0, newSpeed),
+      };
+    });
+  };
+
+  const handleEquipBestSet = () => {
+    setPlayer((prev) => {
+      const bestEquippedItems = buildBestEquipmentSet(
+        prev.inventory,
+        prev.natalArtifactId
+      );
+      const currentEntries = Object.entries(prev.equippedItems).filter(
+        ([, itemId]) => !!itemId
+      );
+      const nextEntries = Object.entries(bestEquippedItems).filter(
+        ([, itemId]) => !!itemId
+      );
+      const hasChange =
+        currentEntries.length !== nextEntries.length ||
+        nextEntries.some(
+          ([slot, itemId]) =>
+            prev.equippedItems[slot as EquipmentSlot] !== itemId
+        );
+
+      if (!hasChange) {
+        addLog('当前已是可用装备中的最强组合。', 'normal');
+        return prev;
+      }
+
+      const getTotalEquipmentStats = (
+        equippedItems: Partial<Record<EquipmentSlot, string>>
+      ) => {
+        return Object.values(equippedItems).reduce(
+          (total, itemId) => {
+            const item = prev.inventory.find((i) => i.id === itemId);
+            if (!item) return total;
+            const stats = getItemStats(item, item.id === prev.natalArtifactId);
+            return {
+              attack: total.attack + stats.attack,
+              defense: total.defense + stats.defense,
+              hp: total.hp + stats.hp,
+              spirit: total.spirit + stats.spirit,
+              physique: total.physique + stats.physique,
+              speed: total.speed + stats.speed,
+            };
+          },
+          {
+            attack: 0,
+            defense: 0,
+            hp: 0,
+            spirit: 0,
+            physique: 0,
+            speed: 0,
+          }
+        );
+      };
+
+      const oldStats = getTotalEquipmentStats(prev.equippedItems);
+      const newStats = getTotalEquipmentStats(bestEquippedItems);
+      const newMaxHp = Math.max(1, prev.maxHp - oldStats.hp + newStats.hp);
+      const tempPlayer = {
+        ...prev,
+        equippedItems: bestEquippedItems,
+        maxHp: newMaxHp,
+      };
+      const totalStats = getPlayerTotalStats(tempPlayer);
+      const equippedCount = Object.values(bestEquippedItems).filter(Boolean).length;
+      const logMessage = `已一键装备当前评分最高的 ${equippedCount} 件装备。`;
+
+      addLog(logMessage, 'gain');
+      if (setItemActionLog) {
+        setItemActionLog({ text: logMessage, type: 'gain' });
+      }
+
+      return {
+        ...prev,
+        equippedItems: bestEquippedItems,
+        attack: prev.attack - oldStats.attack + newStats.attack,
+        defense: prev.defense - oldStats.defense + newStats.defense,
+        maxHp: newMaxHp,
+        hp: Math.min(prev.hp, totalStats.maxHp),
+        spirit: prev.spirit - oldStats.spirit + newStats.spirit,
+        physique: prev.physique - oldStats.physique + newStats.physique,
+        speed: Math.max(0, prev.speed - oldStats.speed + newStats.speed),
+        statistics: {
+          ...prev.statistics,
+          equipCount: (prev.statistics?.equipCount || 0) + 1,
+        },
       };
     });
   };
@@ -680,6 +772,7 @@ export function useEquipmentHandlers(props?: UseEquipmentHandlersProps) {
 
   return {
     handleEquipItem,
+    handleEquipBestSet,
     handleUnequipItem,
     handleRefineNatalArtifact,
     handleUnrefineNatalArtifact,

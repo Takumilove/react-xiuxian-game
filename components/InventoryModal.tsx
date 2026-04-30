@@ -71,6 +71,7 @@ interface Props {
   onBatchDiscard: (itemIds: string[]) => void;
   onBatchUse?: (itemIds: string[]) => void;
   onOrganizeInventory?: () => void;
+  onEquipBestSet?: () => void;
   onRefineNatalArtifact?: (item: Item) => void;
   onUnrefineNatalArtifact?: () => void;
   onRefineAdvancedItem?: (item: Item) => void;
@@ -612,6 +613,7 @@ const InventoryModal: React.FC<Props> = ({
   onBatchDiscard,
   onBatchUse,
   onOrganizeInventory,
+  onEquipBestSet,
   onRefineNatalArtifact,
   onUnrefineNatalArtifact,
   onRefineAdvancedItem,
@@ -906,6 +908,18 @@ const InventoryModal: React.FC<Props> = ({
       showFooterBorder={false}
       titleExtra={
         <div className="flex gap-2 items-center ml-auto md:ml-4">
+            {onEquipBestSet && (
+              <button
+                onClick={onEquipBestSet}
+                className="px-2 md:px-3 py-1.5 md:py-1 rounded text-xs md:text-sm border transition-colors min-h-11 md:min-h-0 touch-manipulation bg-mystic-gold/20 border-mystic-gold text-mystic-gold hover:bg-mystic-gold/30"
+                title="自动装备当前背包中综合评分最高的一套装备"
+              >
+                <div className="flex items-center">
+                  <ShieldCheck size={14} className="inline mr-1" />
+                  <span>一键最强</span>
+                </div>
+              </button>
+            )}
             {onOrganizeInventory && (
               <button
                 onClick={() => {

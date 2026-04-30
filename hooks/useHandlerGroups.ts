@@ -18,6 +18,7 @@ interface CoreHandlers {
   handleEnterRealm: (realm: SecretRealm) => Promise<void>; // 进入境界
   handleUseItem: (item: Item) => void; // 使用物品
   handleEquipItem: (item: Item) => void; // 装备物品
+  handleEquipBestSet: () => void; // 一键装备最强套装
   handleUnequipItem: (slot: string) => void; // 卸下物品
   handleOpenUpgrade: (item: Item) => void; // 打开升级界面
   handleDiscardItem: (item: Item) => void; // 丢弃物品
@@ -168,6 +169,7 @@ interface UseHandlerGroupsProps {
     handleEnterRealm: (realm: SecretRealm) => Promise<void>; // 进入境界
     handleUseItem: (item: Item) => void; // 使用物品
     handleEquipItem: (item: Item) => void; // 装备物品
+    handleEquipBestSet: () => void; // 一键装备最强套装
     handleUnequipItem: (slot: string) => void; // 卸下物品
     handleOpenUpgrade: (item: Item) => void; // 打开升级界面
     handleDiscardItem: (item: Item) => void; // 丢弃物品
@@ -249,6 +251,7 @@ export function useCoreHandlers(appHandlers: UseHandlerGroupsProps['appHandlers'
       handleEnterRealm: appHandlers.handleEnterRealm,
       handleUseItem: appHandlers.handleUseItem,
       handleEquipItem: appHandlers.handleEquipItem,
+      handleEquipBestSet: appHandlers.handleEquipBestSet,
       handleUnequipItem: appHandlers.handleUnequipItem,
       handleOpenUpgrade: appHandlers.handleOpenUpgrade,
       handleDiscardItem: appHandlers.handleDiscardItem,
@@ -271,6 +274,7 @@ export function useCoreHandlers(appHandlers: UseHandlerGroupsProps['appHandlers'
       appHandlers.handleEnterRealm,
       appHandlers.handleUseItem,
       appHandlers.handleEquipItem,
+      appHandlers.handleEquipBestSet,
       appHandlers.handleUnequipItem,
       appHandlers.handleOpenUpgrade,
       appHandlers.handleDiscardItem,

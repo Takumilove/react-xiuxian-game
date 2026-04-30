@@ -278,9 +278,9 @@ export function useAdventureHandlers({
         }
 
         if (!result) {
-        // 100%使用模板库
-        initializeEventTemplateLibrary();
-        const template = getRandomEventTemplate(adventureType, riskLevel, player.realm, player.realmLevel);
+          // 100%使用模板库
+          initializeEventTemplateLibrary();
+          const template = getRandomEventTemplate(adventureType, riskLevel, player.realm, player.realmLevel);
 
         if (template) {
           // 使用实际最大血量（包含金丹法数加成等）
@@ -421,7 +421,7 @@ export function useAdventureHandlers({
             eventColor: 'normal',
           };
         }
-        }
+      }
       }
 
       // 确保 result 存在，如果不存在则使用默认值
